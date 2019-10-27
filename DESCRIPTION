@@ -1,0 +1,37 @@
+Package: UsefulPlants
+Title: Exploring the Global Distributon of People's plant
+Version: 0.0.0.9000
+Authors@R: person("Ian", "Ondo", email = "iondo@kew.org", role = c("aut", "cre"))
+Description: What the package does (one paragraph).
+License: What license it uses
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    gdalUtils,
+    pals,
+    gplots,
+    ggplotify,
+    grImport,
+    grid,
+    gridExtra,
+    raster,
+    maptools,
+    rgeos,
+    geosphere,
+    rgdal,
+    foreach,
+    xlsx,
+    doParallel,
+    parallel,
+    biomod2,
+    sp,
+    data.table,
+    snow,
+    rasterVis,
+    dismo,
+    usdm,
+    rJava,
+    questionr,
+    stringr,
+    classInt
+RoxygenNote: 6.1.1
