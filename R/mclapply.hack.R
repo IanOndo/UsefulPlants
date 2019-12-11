@@ -16,7 +16,7 @@
 #' @seealso mclapply
 #' @export
 #'
-mclapply.hack <- function(..., verbose=FALSE, mc.cores=NULL) {
+mclapply.hack <- function(..., verbose=FALSE, mc.cores=NULL, mc.preschedule = TRUE) {
 
   require(parallel)
 
