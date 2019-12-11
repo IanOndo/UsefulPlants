@@ -33,5 +33,7 @@ Imports:
     rJava,
     questionr,
     stringr,
-    classInt
+    classInt,
+    rgbif,
+    BIEN
 RoxygenNote: 6.1.1

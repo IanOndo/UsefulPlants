@@ -8,7 +8,6 @@
 #' @param mc_core A numeric integer specifying the number of cores to be used for parallel computing. Should be >1 for parallel processing.
 #' @return None
 #' @export
-#' @examples
 queryOcc <- function(species_name	= system.file("extdata/UsefulPlants_workflow/List_of_useful_plant_name.txt", package='UsefulPlants'),
                      data_sources = c('gbif','bien','biotime','rainbio', 'genesys', 'spLink','cwr_gbif'),
                      download_dir = system.file("extdata/UsefulPlants_workflow/Occ_dir/data_online", package='UsefulPlants'),

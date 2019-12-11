@@ -30,12 +30,12 @@ List2MaxEntCommand <- function(argList){
                   'jackknife' 		=	if(argList[[arg]]) '-J' else '',
                   'outputformat' 		=	paste0(arg,'=',argList[[arg]]),
                   'outputfiletype' 	=	paste0(arg,'=',argList[[arg]]),
-                  #'outputdirectory' 	=	paste('-o',argList[[arg]]),
+                  #outputdirectory' 	=	paste('-o',argList[[arg]]),
                   'projectionlayers' 	=	paste('-j',argList[[arg]]),
 
 
-                  #'samplesfile' 		=	paste('-s',argList[[arg]])
-                  #'environmentallayers'=	paste('-e',argList[[arg]])
+                  #samplesfile' 		=	paste('-s',argList[[arg]])
+                  #environmentallayers'=	paste('-e',argList[[arg]])
 
                   'randomseed'	 	=	paste0(arg,'=',argList[[arg]]),
 
@@ -43,7 +43,7 @@ List2MaxEntCommand <- function(argList){
                   'warnings' 			=	paste0(arg,'=',argList[[arg]]),
 
                   'tooltips' 			=	paste0(arg,'=',argList[[arg]]),
-                  #'askoverwrite'		= 	if(argList[[arg]]) '-r' else '',
+                  #askoverwrite'		= 	if(argList[[arg]]) '-r' else '',
 
                   'skipifexists'		= 	if(argList[[arg]]) '-S' else '',
 
@@ -78,12 +78,12 @@ List2MaxEntCommand <- function(argList){
                   'hinge'				= 	if(argList[[arg]])'-h' else '',
                   'addsamplestobackground'=	if(argList[[arg]])'-d' else '',
                   'addallsamplestobackground'= paste0(arg,'=',argList[[arg]]),
-                  #'autorun'			= 	if(argList[[arg]])'-a' else '',
+                  #autorun'			= 	if(argList[[arg]])'-a' else '',
                   'writeplotdata'		=	paste0(arg,'=',argList[[arg]]),
                   'fadebyclamping'	= 	paste0(arg,'=',argList[[arg]]),
 
                   'extrapolate'		=	paste0(arg,'=',argList[[arg]]),
-                  #'visible'			=	if(argList[[arg]])'-z'
+                  #visible'			=	if(argList[[arg]])'-z'
                   'autofeature'		= 	if(argList[[arg]])'-A' else '',
                   'doclamp'			= 	paste0(arg,'=',argList[[arg]]),
                   'outputgrids'		= 	paste('-x',argList[[arg]]),
