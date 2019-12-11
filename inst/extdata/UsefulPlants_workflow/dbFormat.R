@@ -49,7 +49,7 @@ for(src in data_sources) {
                                               "COORDUNCERT",
                                               "SAMPSTAT")), silent=TRUE)
 
-         if(!inherits(genesysDATA,'error')){
+         if(!inherits(genesysDATA,'try-error')){
 
            #---------------
            #= formatting
@@ -101,7 +101,7 @@ for(src in data_sources) {
                                       "establishmentMeans",
                                       "individualCount"), silent=TRUE)
 
-         if(!inherits(cwr_gbifDATA,'error')){
+         if(!inherits(cwr_gbifDATA,'try-error')){
 
            #---------------
            #= formatting
@@ -138,7 +138,7 @@ for(src in data_sources) {
          # reading
          spLinkDATA <- try(data.table::fread(system.file("extdata/Occ_dir/data_sources/SpeciesLink.txt", package='UsefulPlants'),header=TRUE, showProgress=FALSE, na.strings=c("",NA)), silent=TRUE)
 
-         if(!inherits(spLinkDATA,'error')){
+         if(!inherits(spLinkDATA,'try-error')){
           # formatting
           spLinkDATA <- na.omit(spLinkDATA, cols= c("latitude", "longitude"))
 
@@ -161,7 +161,7 @@ for(src in data_sources) {
                                               "catalogNumber",
                                               "coly")), silent=TRUE)
 
-         if(!inherits(rainbioDATA,'error')){
+         if(!inherits(rainbioDATA,'try-error')){
 
            #---------------
            #= formatting
@@ -199,7 +199,7 @@ for(src in data_sources) {
                                                          "sum.allrawdata.ABUNDANCE",
                                                          "SAMPLE_DESC")), silent=TRUE)
 
-          if(!inherits(biotimeDATA,'error')){
+          if(!inherits(biotimeDATA,'try-error')){
 
             #---------------
             #= formatting
