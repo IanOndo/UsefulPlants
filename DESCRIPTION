@@ -35,5 +35,6 @@ Imports:
     stringr,
     classInt,
     rgbif,
-    BIEN
+    BIEN,
+    occCite
 RoxygenNote: 6.1.1
