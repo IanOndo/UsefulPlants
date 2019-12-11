@@ -10,8 +10,8 @@
 #' @export
 queryOcc <- function(species_name	= system.file("extdata/UsefulPlants_workflow/List_of_useful_plant_name.txt", package='UsefulPlants'),
                      data_sources = c('gbif','bien','biotime','rainbio', 'genesys', 'spLink','cwr_gbif'),
-                     download_dir = system.file("extdata/UsefulPlants_workflow/Occ_dir/data_online", package='UsefulPlants'),
-                     output_dir   = system.file("extdata/UsefulPlants_workflow/Occ_dir/data_output", package='UsefulPlants'),
+                     download_dir = system.file("extdata/Occ_dir/data_online", package='UsefulPlants'),
+                     output_dir   = system.file("extdata/Occ_dir/data_output", package='UsefulPlants'),
                      run_name			= 'Test',
                      mc_cores			= NULL)
 {
@@ -44,15 +44,15 @@ queryOcc <- function(species_name	= system.file("extdata/UsefulPlants_workflow/L
   if(any(!data_sources %in% c('gbif','bien','biotime','rainbio', 'genesys', 'spLink','cwr_gbif')))
     stop(paste(data_sources[which(!data_sources %in% c('gbif','bien','biotime','rainbio', 'genesys', 'spLink', 'cwr_gbif'))]," is/are not valid data source(s)."))
 
-  if(missing(download_dir)){
+  if( 'gbif' %in% data_sources & !dir.exists(download_dir)){
     warning("Argument 'download_dir' is missing, and will be set to the current working directory");flush.console()
     download_dir = getwd()
   }
   # ensure that the output directory provided exists
   if(!dir.exists(output_dir)){
     warning(paste("Output directory:", output_dir,"does not exist or could not be found, and will be set to the current working directory ./queryOcc"));flush.console()
-    output_dir=getwd()
-    dir.create(file.path(output_dir, 'queryOcc'), recursive=TRUE)
+    output_dir=file.path(getwd(), 'queryOcc')
+    dir.create(output_dir, recursive=TRUE)
   }
 
   if(!is.null(mc_cores) & !is.numeric(mc_cores))
@@ -75,7 +75,7 @@ queryOcc <- function(species_name	= system.file("extdata/UsefulPlants_workflow/L
 
     'data_source'   = if(length(data_sources)>1) paste(data_sources,collapse=",") else data_sources,
 
-    'download_dir' 	= download_dir,
+    'download_dir' 	= if(!dir.exists(download_dir)) NULL else download_dir,
 
     'output_dir' 	  = output_dir,
 

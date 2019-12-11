@@ -55,9 +55,9 @@ queryGBIF <- function(species_name, gbif_login, gbif_download_dir=NULL, rank='sp
                     pwd = gbif_login@'pwd',
                     email = gbif_login@'email'),silent=TRUE)
 
-  if(inherits(occ_query,'error')){
-    cat('\n\n')
-    cat(paste('<< Unable to download occurrence records for', species_name,'. Aborting...>>'))
+  if(inherits(occ_query,'try-error')){
+    cat('\n')
+    cat(paste('<< Unable to obtain occurrence records for', species_name,'. Aborting...>>'))
     return(NULL)
   }
 
@@ -78,12 +78,17 @@ queryGBIF <- function(species_name, gbif_login, gbif_download_dir=NULL, rank='sp
   #---------------------------------------------
   #=2b. download data from GBIF to local machine
   #---------------------------------------------
-  occ_data <- rgbif::occ_download_get(occ_query, path = gbif_download_dir, overwrite=TRUE)  # if too large to download into R- download manually through GBIF or split into parts above, if
-  if(attr(occ_data,'size')==0L) return(NULL)                                        # if manual download, manual import also needed, see rgbifFORMAT downloads for manual import and formatting
+  occ_data <- try(rgbif::occ_download_get(occ_query, path = gbif_download_dir, overwrite=TRUE), silent=TRUE)  # if too large to download into R- download manually through GBIF or split into parts above, if
+
+  if(inherits(occ_data,'try-error') || attr(occ_data,'size')==0L){
+    cat('\n')
+    if(verbose) cat('...<< Unable to download data from GBIF to local machine >>...')
+    return(NULL)
+  }                                      # if manual download, manual import also needed, see rgbifFORMAT downloads for manual import and formatting
   #---------------------
   #=2c. import data
   #---------------------
-  gbifDATA<- rgbif::occ_download_import(occ_data, header=TRUE, showProgress=FALSE, na.strings=c("",NA),
+  gbifDATA<- try(rgbif::occ_download_import(occ_data, header=TRUE, showProgress=FALSE, na.strings=c("",NA),
                                             select=c("species",
                                                      "taxonRank",
                                                      "infraspecificEpithet",
@@ -96,8 +101,8 @@ queryGBIF <- function(species_name, gbif_login, gbif_download_dir=NULL, rank='sp
                                                      "basisOfRecord",
                                                      "institutionCode",
                                                      "establishmentMeans",
-                                                     "individualCount"))
-  if(!inherits(gbifDATA,'error')){
+                                                     "individualCount")), silent=TRUE)
+  if(!inherits(gbifDATA,'try-error')){
 
     # set to data.table object
     data.table::setDT(gbifDATA)
@@ -106,12 +111,13 @@ queryGBIF <- function(species_name, gbif_login, gbif_download_dir=NULL, rank='sp
     #=3. format the data
     #--------------------
     gbifDATA<-na.omit(gbifDATA, cols= c("decimalLatitude", "decimalLongitude"))
+
     # format the data:
     gbifDATA[, `:=`(taxonRank = ifelse(taxonRank %in% c("SPECIES","GENUS"), NA, ifelse(taxonRank=="FORM", "f.", ifelse(taxonRank=="SUBSPECIES", "subsp.", ifelse(taxonRank=="VARIETY","var.", taxonRank)))),
                     countryCode = countrycode::countrycode(countryCode, origin =  'iso2c', destination = 'iso3c', nomatch = NA),
                     establishmentMeans = ifelse(establishmentMeans=="INTRODUCED","Introduced",ifelse(establishmentMeans== "NATIVE", "Native", establishmentMeans)))]
     # create 'fullname', 'is_cultivated_observation' and 'sourceID' columns
-    gbifDATA[,`:=`(fullname = ifelse(is.na(infraspecificEpithet), paste(species), paste(species, taxonRank, infraspecificEpithet)),
+    gbifDATA[, `:=`(fullname = ifelse(is.na(infraspecificEpithet), paste(species), paste(species, taxonRank, infraspecificEpithet)),
                                                    is_cultivated_observation = NA,
                                                    sourceID = 'GBIF')]
     # delete taxonRank and infraspecificEpithet columns
@@ -130,12 +136,12 @@ queryGBIF <- function(species_name, gbif_login, gbif_download_dir=NULL, rank='sp
     data.table::setkey(gbifDATA, 'species')
 
   }else{
-    cat('\n\n')
+    cat('\n')
     cat('...<< Unable to import data from gbif database >>...')
     return(NULL)
   }
 
   if(verbose) cat('...DONE...\n\n')
-  return(gbifDATA)
+  return(data.table::copy(gbifDATA))
 }
 
