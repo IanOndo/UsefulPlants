@@ -4,12 +4,18 @@
 \alias{run_SDMWorkflow}
 \title{Running SDM Workflow}
 \usage{
-run_SDMWorkflow(use_category = "All", use_default_settings = TRUE)
+run_SDMWorkflow(base_directory, species_directory, env_directory,
+  which_uses = "AllUses", use_default_settings = TRUE)
 }
 \arguments{
-\item{use_category}{A character string specifying which category of plant uses the modelling should be performed on}
+\item{base_directory}{A character string specifying the directory where to store the outputs of the workflow}
 
-\item{use_default_settings}{A logical. Should the models be run with default settings. Default is TRUE.}
+\item{species_directory}{A character string specifying the directory where are stored the species occurrence records.}
+
+\item{env_directory}{A character string specifying the directory where are stored the environmental layers.}
+
+\item{which_uses}{A character string specifying the name of the plant use category to model among: `AnimalFood`, `HumanFood`,`InvertebratesFood`,`Medicinals`
+`EnvironmentalUses`,`Materials`,`SocialUses`,`GeneSources`,`Fuels`,`Poisons`. Default is `AllUses`, which means that outputs of all categories will be aggregated.}
 }
 \value{
 None

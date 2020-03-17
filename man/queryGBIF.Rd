@@ -4,14 +4,23 @@
 \alias{queryGBIF}
 \title{Query Species Occurrences from GBIF}
 \usage{
-queryGBIF(species_name, gbif_login, gbif_download_dir = NULL,
-  rank = "species", kingdom = "plants", status_ping = 5,
+queryGBIF(species_name, user = NULL, email = NULL, pwd = NULL,
+  gbif_download_dir = NULL, rank = "species", kingdom = "Plantae",
+  status_ping = 3, time_out = 300, index = NULL, check_output = "",
   verbose = TRUE)
 }
 \arguments{
-\item{species_name}{A single species name}
+\item{species_name}{A vector of species names}
 
-\item{gbif_login}{An object of class GBIFLogin to log in to GBIF to begin the download}
+\item{user}{A vector of type character specifying a GBIF username.}
+
+\item{email}{A vector of type character specifying the email associated with a GBIF username.}
+
+\item{pwd}{A vector of type character containing the user's password for logging in to GBIF.}
+
+\item{rank}{the given rank at which to search. Default is 'species'.}
+
+\item{kingdom}{the kingdom in which to search. Default is 'Plantae'.}
 }
 \value{
 A data.table object with occurrence data

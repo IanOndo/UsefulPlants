@@ -8,10 +8,10 @@
   queryOcc(species_name = system.file("extdata/UsefulPlants_workflow/List_of_useful_plant_name.txt",
   package = "UsefulPlants"), data_sources = c("gbif", "bien", "biotime",
   "rainbio", "genesys", "spLink", "cwr_gbif"),
-  download_dir = system.file("extdata/UsefulPlants_workflow/Occ_dir/data_online",
-  package = "UsefulPlants"),
-  output_dir = system.file("extdata/UsefulPlants_workflow/Occ_dir/data_output",
-  package = "UsefulPlants"), run_name = "Test", mc_cores = NULL)
+  download_dir = system.file("extdata/Occ_dir/data_online", package =
+  "UsefulPlants"),
+  output_dir = system.file("extdata/Occ_dir/data_output", package =
+  "UsefulPlants"), run_name = "Test", mc_cores = NULL)
 }
 \arguments{
 \item{species_name}{Either a vector of species names or a csv file where species names are stored in the first column.}
