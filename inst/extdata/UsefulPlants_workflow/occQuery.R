@@ -45,12 +45,14 @@ mySpecies_names = try(as.character(read.csv(SPECIES_NAME, header=TRUE)[,1]),sile
 
 cat('> Species name(s):')
 if(!inherits(mySpecies_names,'try-error')){
-  file.removed <- file.remove(SPECIES_NAME)
-  if(!file.removed){
-    cat('\n\n')
-    warning(paste('Unable to remove species name file:', SPECIES_NAME))
+  if(grepl("queryOcc",SPECIES_NAME)){
+      file.removed <- file.remove(SPECIES_NAME)
+      if(!file.removed){
+        cat('\n\n')
+        warning(paste('Unable to remove species name file:', SPECIES_NAME))
+      }
+      cat('...OK\n')
   }
-  cat('...OK\n')
 }else{
   stop('...<< Unable to read species names data >>...')
 }
@@ -76,7 +78,7 @@ if(!dir.exists(OUTPUT_DIR)) dir.create(OUTPUT_DIR, recursive=TRUE)
 myOfflineData_sources <- intersect(myData_sources, c('biotime','rainbio', 'genesys', 'genesys','spLink','cwr_gbif'))
 if(length(myOfflineData_sources)>0L){
   # Should some data sources be preformatted ?
-  need_formatting = sapply(myOfflineData_sources, function(src) file.exists(system.file("extdata/Occ_dir/data_formatted",paste0(src,"DATA.rds"), package='UsefulPlants')))
+  need_formatting = sapply(myOfflineData_sources, function(src) !file.exists(system.file("extdata/Occ_dir/data_formatted",paste0(src,"DATA.rds"), package='UsefulPlants')))
 }else{
   need_formatting = FALSE
 }
@@ -89,9 +91,10 @@ cat('#== 2. Prepare databases\n')
 cat('#====================================================================\n')
 if(doFormatting){
   cat('...Formatting required databases...')
-  commandArgs <- function(...) paste0(intersect(myData_sources[!need_formatting], c('biotime','rainbio', 'genesys','spLink','cwr_gbif')))
+  cat('\n\n')
+  commandArgs <- function(...) paste0(intersect(names(need_formatting)[need_formatting], c('biotime','rainbio', 'genesys','spLink','cwr_gbif')))
   assign('commandArgs',commandArgs,envir=.GlobalEnv)
-  source(system.file("extdata/UsefulPlants_workflow/dbFormat.r",package='UsefulPlants'))
+  source(system.file("extdata/UsefulPlants_workflow/dbFormat.R",package='UsefulPlants'))
 }else{
   cat('...No need to format required databases now...')
 }
@@ -114,14 +117,14 @@ if(length(myOfflineData_sources)>0L){
   myOfflineDataBases <- lapply(list_of_formatted_databases, readRDS)
   names(myOfflineDataBases) <- gsub('DATA\\.rds','', basename(list_of_formatted_databases))
 
-  mydatabaseQueries <- sapply(myOfflineDataBases, UsefulPlants::is.keyval.exists, keyval=mySpecies_names)
+  mydatabaseQueries <- sapply(myOfflineDataBases, is.keyval.exists, keyval=mySpecies_names)
 
   # compute number of species available by databases and total number of species available
   NbSpecies_by_offline_data_sources <- colSums(mydatabaseQueries)
   NbSpecies_available <- sum(apply(mydatabaseQueries,1,any))
 
   if(NbSpecies_available>0){
-    cat(paste(NbSpecies_available,'species are available in the databases required:\n'))
+    cat(paste(NbSpecies_available,'species available in the local databases specified:\n'))
 
     for(k in 1:length(myOfflineDataBases))
       cat(paste('*',NbSpecies_by_offline_data_sources[k],paste0("species from ", toupper(names(myOfflineDataBases)[k])," database\n")))
@@ -138,17 +141,28 @@ cat('\n\n')
 cat('#====================================================================\n')
 cat('#== 4. Run queries\n')
 cat('#====================================================================\n')
-if('gbif' %in% myData_sources){
+has_gbif = 'gbif' %in% myData_sources
+
+if(has_gbif){
   #Creating a GBIF login
-  myGBIFLogin <- occCite::GBIFLoginManager(user = "iondo",
-                                email = "i.ondo@kew.org",
-                                pwd = "Toblerondo11");
+  myGBIFLogin <- list(user = "spironon",
+                      email = "s.pironon@kew.org",
+                      pwd = "Useful54");
+  # if(is.null(myGBIFLogin)){
+  #   if(length(myData_sources)==1)
+  #     stop("Impossible to login to GBIF")
+  #   else{
+  #     warning("Impossible to login to GBIF. Gbif database will not be queried.")
+  #     myData_sources<-myData_sources[-c('gbif')]
+  #     has_gbif = 'gbif' %in% myData_sources
+  #   }
+  # }
   # set gbif user account credentials
   if(all(Sys.getenv(c('GBIF_USER','GBIF_PWD','GBIF_EMAIL'))==""))
-    Sys.setenv(GBIF_USER=myGBIFLogin@'username', GBIF_PWD=myGBIFLogin@'pwd', GBIF_EMAIL=myGBIFLogin@'email')
+    Sys.setenv(GBIF_USER=myGBIFLogin$'user', GBIF_PWD=myGBIFLogin$'pwd', GBIF_EMAIL=myGBIFLogin$'email')
 }
 
-cat('...Starting extraction...\n\n')
+cat('...Extracting occurrence records from', paste(myData_sources[myData_sources!='gbif'],collapse=", "),'...\n\n')
 
 started.at <- Sys.time()
 mclapply(c(1:length(mySpecies_names)), function(j){
@@ -158,35 +172,12 @@ mclapply(c(1:length(mySpecies_names)), function(j){
   if(exists('mydatabaseQueries'))
     offline_db  <- colnames(mydatabaseQueries)[mydatabaseQueries[j,]]
   online_db   <- setdiff(myData_sources, myOfflineData_sources)
-  db_to_query <- c(offline_db, online_db)
-
-  # set gbif user account credentials
-  if('gbif' %in% db_to_query && all(Sys.getenv(c('GBIF_USER','GBIF_PWD','GBIF_EMAIL'))==""))
-    Sys.setenv(GBIF_USER=myGBIFLogin@'username', GBIF_PWD=myGBIFLogin@'pwd', GBIF_EMAIL=myGBIFLogin@'email')
+  db_to_query <- c(offline_db, online_db[!online_db=="gbif"])
 
   # loop over databases
   for(db in db_to_query){
 
     out = switch(db,
-
-                 'gbif' = {
-                   if(!dir.exists(file.path(DOWNLOAD_DIR, mySpecies_names[j])))
-                     dir.create(file.path(DOWNLOAD_DIR, mySpecies_names[j]),recursive=TRUE)
-
-                   gbifData <- queryGBIF(species_name = mySpecies_names[j], gbif_login=myGBIFLogin, gbif_download_dir = file.path(DOWNLOAD_DIR, mySpecies_names[j]))
-
-                   if(!is.null(gbifData)){
-
-                     if(!dir.exists(file.path(OUTPUT_DIR, mySpecies_names[j])))
-                       dir.create(file.path(OUTPUT_DIR, mySpecies_names[j]),recursive=TRUE)
-
-                     write.table(gbifData, file=file.path(OUTPUT_DIR, mySpecies_names[j], paste0(mySpecies_names[j],'.csv')),
-                                 row.names=FALSE,
-                                 col.names = !file.exists(file.path(OUTPUT_DIR, mySpecies_names[j], paste0(mySpecies_names[j],'.csv'))),
-                                 sep=",",
-                                 append=TRUE)
-                   }
-                 },
 
                  'bien' = {
                    bienData <- queryBIEN(species_name = mySpecies_names[j])
@@ -217,6 +208,36 @@ mclapply(c(1:length(mySpecies_names)), function(j){
                                 col.names = !file.exists(file.path(OUTPUT_DIR, mySpecies_names[j], paste0(mySpecies_names[j],'.csv'))),
                                 sep=",",
                                 append=TRUE)
+                 },
+
+                 'cwr_gbif' = {
+
+                   if(!exists('cwr_gbifDATA'))
+                     cwr_gbifDATA <- readRDS(system.file("extdata/Occ_dir/data_formatted","cwr_gbifDATA.rds", package='UsefulPlants'))
+
+                   if(!dir.exists(file.path(OUTPUT_DIR, mySpecies_names[j])))
+                     dir.create(file.path(OUTPUT_DIR, mySpecies_names[j]),recursive=TRUE)
+
+                   write.table(cwr_gbifDATA[mySpecies_names[j]], file=file.path(OUTPUT_DIR, mySpecies_names[j], paste0(mySpecies_names[j],'.csv')),
+                               row.names=FALSE,
+                               col.names = !file.exists(file.path(OUTPUT_DIR, mySpecies_names[j], paste0(mySpecies_names[j],'.csv'))),
+                               sep=",",
+                               append=TRUE)
+                 },
+
+                 'spLink' = {
+
+                   if(!exists('spLinkDATA'))
+                     spLinkDATA <- readRDS(system.file("extdata/Occ_dir/data_formatted","spLinkDATA.rds", package='UsefulPlants'))
+
+                   if(!dir.exists(file.path(OUTPUT_DIR, mySpecies_names[j])))
+                     dir.create(file.path(OUTPUT_DIR, mySpecies_names[j]),recursive=TRUE)
+
+                   write.table(spLinkDATA[mySpecies_names[j]], file=file.path(OUTPUT_DIR, mySpecies_names[j], paste0(mySpecies_names[j],'.csv')),
+                               row.names=FALSE,
+                               col.names = !file.exists(file.path(OUTPUT_DIR, mySpecies_names[j], paste0(mySpecies_names[j],'.csv'))),
+                               sep=",",
+                               append=TRUE)
                  },
 
                  'rainbio' = {
@@ -254,11 +275,58 @@ mclapply(c(1:length(mySpecies_names)), function(j){
     gc()
   }
 },mc.cores=MC_CORES, mc.preschedule = FALSE)
+
+if(has_gbif){
+
+  cat('\n\n...Extracting occurrence records from gbif...\n\n')
+
+  chunk <- function(x,n) split(x, cut(seq_along(x), n, labels = FALSE))
+  nchunk = 3
+  chunked.list <- chunk(mySpecies_names, nchunk)
+
+  mclapply(c(1:length(chunked.list)), function(j){
+
+    out = try({
+
+      # set gbif user account credentials
+      if(all(Sys.getenv(c('GBIF_USER','GBIF_PWD','GBIF_EMAIL'))==""))
+        Sys.setenv(GBIF_USER=myGBIFLogin$'user', GBIF_PWD=myGBIFLogin$'pwd', GBIF_EMAIL=myGBIFLogin$'email')
+
+      if(!dir.exists(DOWNLOAD_DIR))
+        dir.create(DOWNLOAD_DIR,recursive=TRUE)
+
+      gbifData <- queryGBIF(species_name = chunked.list[[j]], gbif_download_dir = DOWNLOAD_DIR, time_out=10800, check_output=DOWNLOAD_DIR, index=j)
+
+      if(!is.null(gbifData)){
+
+        for(sp in 1:length(chunked.list[[j]])){
+
+          if(!dir.exists(file.path(OUTPUT_DIR, chunked.list[[j]][sp])))
+            dir.create(file.path(OUTPUT_DIR, chunked.list[[j]][sp]),recursive=TRUE)
+
+          write.table(gbifData[chunked.list[[j]][sp]], file=file.path(OUTPUT_DIR, chunked.list[[j]][sp], paste0(chunked.list[[j]][sp],'.csv')),
+                      row.names=FALSE,
+                      col.names = !file.exists(file.path(OUTPUT_DIR, chunked.list[[j]][sp], paste0(chunked.list[[j]][sp],'.csv'))),
+                      sep=",",
+                      append=TRUE)
+        }
+
+      }
+
+   }, silent=TRUE)
+
+   if(inherits(out,'try-error')) cat(out)
+   gc()
+
+  },mc.cores=MC_CORES, mc.preschedule = FALSE)
+
+}
+
 finished.at <- Sys.time()
 time.elapsed <- finished.at - started.at
 
-cat('...End of extraction...\n\n')
+cat('...Extraction completed...\n\n')
 cat(paste0('> End of Run ',"'",run_name,"'",' on: ',Sys.time()),'\n\n');finished.at=proc.time()
-cat(paste0('> Running time: ',as.numeric(time.elapsed),'', attr(time.elapsed,'units'),'\n'))
+cat(paste0('> Running time: ',as.numeric(time.elapsed),' ', attr(time.elapsed,'units'),'\n'))
 cat(paste0('#',paste(rep('-',times=100),collapse="")))
 cat('\n\n')
