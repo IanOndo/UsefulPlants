@@ -14,12 +14,14 @@ is.keyval.exists <- function(DT, keyval, how=NULL){
     stop("Argument DT must be a data.table object")
   if(!data.table::haskey(DT))
     stop("DT must have a key !")
+  # get the key
+  keyDT <- data.table::key(DT)
 
   if(is.null(how))
-    return(keyval %in% .subset2(DT[J(keyval), mult="first", nomatch=0], data.table::key(DT)))
+    return(keyval %in% .subset2(DT[J(keyval), mult="first", nomatch=0], keyDT))
 
   switch(how,
-         "any" = any(keyval %in% .subset2(DT[J(keyval), mult="first", nomatch=0], data.table::key(DT))),
-         "all" = all(keyval %in% .subset2(DT[J(keyval), mult="first", nomatch=0], data.table::key(DT)))
+         "any" = any(keyval %in% .subset2(DT[J(keyval), mult="first", nomatch=0], keyDT)),
+         "all" = all(keyval %in% .subset2(DT[J(keyval), mult="first", nomatch=0], keyDT))
   )
 }

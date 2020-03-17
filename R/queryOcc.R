@@ -31,7 +31,7 @@ queryOcc <- function(species_name	= system.file("extdata/UsefulPlants_workflow/L
     stop("Please provide a vector of species names or a file containing species names.")
 
   file_flag= tryCatch(file.exists(species_name), error=function(err) FALSE) && !tryCatch(dir.exists(species_name), error=function(err) FALSE)
-  vector_flag = inherits(mode(species_name),"character")
+  vector_flag = !file_flag & inherits(mode(species_name),"character")
 
   if(file_flag && length(readLines(species_name))==0L)
     stop(paste("The file provided:",species_name," is empty!"))
@@ -89,5 +89,5 @@ queryOcc <- function(species_name	= system.file("extdata/UsefulPlants_workflow/L
   #====================================================================
   commandArgs <- function(...) paste0(names(params),'=',params)
   assign('commandArgs',commandArgs,envir=.GlobalEnv)
-  source(system.file("extdata/UsefulPlants_workflow/occQuery.r", package='UsefulPlants'))
+  source(system.file("extdata/UsefulPlants_workflow/occQuery.R", package='UsefulPlants'))
 }
