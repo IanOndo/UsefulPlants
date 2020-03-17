@@ -1,0 +1,1 @@
+This folder contain species occurrence records datasets in csv file format. It's the default output folder of the queryOcc function
