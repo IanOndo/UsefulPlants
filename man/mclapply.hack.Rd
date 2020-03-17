@@ -7,7 +7,8 @@ Designed to be used just like mclapply.
 Code slightly modified from https://rdrr.io/github/lcomm/ltools/ itself (extremely) lightly modified from https://github.com/nathanvan/mcmc-in-irt/blob/master/post-10-mclapply-hack.R
 Credit goes to Nathan VanHoudnos.}
 \usage{
-mclapply.hack(..., verbose = FALSE, mc.cores = NULL)
+mclapply.hack(..., verbose = FALSE, mc.cores = NULL,
+  mc.preschedule = TRUE)
 }
 \arguments{
 \item{verbose}{Should users be warned this is hack-y? Defaults to FALSE.}
