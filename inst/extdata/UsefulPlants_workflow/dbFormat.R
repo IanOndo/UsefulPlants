@@ -1,4 +1,4 @@
-data_sources = commandArgs(trailingOnly=TRUE)
+db_sources = commandArgs(trailingOnly=TRUE)
 
 #=====================================================================
 #=1. Reading and formatting offline databases (downloaded from online)
@@ -22,11 +22,12 @@ colNames = c("species",
 
 # flags
 genesys_flag = spLink_flag = rainbio_flag = biotime_flag = cwr_db_flag = FALSE
+overwrite = FALSE
 
-cat('> reading and formatting offline databases...')
+cat('> reading and formatting offline databases...\n')
 
 # start of loop
-for(src in data_sources) {
+for(src in db_sources) {
 
   switch(src,
 
@@ -35,7 +36,7 @@ for(src in data_sources) {
          #---------------
          #= reading
          #---------------
-         genesysDATA <- try(data.table::fread(system.file("extdata/Occ_dir/data_sources/GENESYSdata.csv", package='UsefulPlants'), header=TRUE, showProgress=FALSE, na.strings=c("",NA),
+         genesysDATA <- try(data.table::fread(paste("unzip -p",system.file("extdata/Occ_dir/data_sources/GENESYSdata.zip", package='UsefulPlants')), header=TRUE, showProgress=FALSE, na.strings=c("",NA),
                                               select= c("GENUS",
                                               "SPECIES",
                                               "SUBTAXA",
@@ -86,7 +87,7 @@ for(src in data_sources) {
          #---------------
          #= reading
          #---------------
-         cwr_gbifDATA <- try(data.table::fread(system.file("extdata/Occ_dir/data_sources/CWRdatabaseGBIF.csv", package='UsefulPlants'), header=TRUE, showProgress=FALSE, quote="", na.strings=c("",NA)),
+         cwr_gbifDATA <- try(data.table::fread(paste("unzip -p",system.file("extdata/Occ_dir/data_sources/CWRdatabaseGBIF.zip", package='UsefulPlants')), header=TRUE, showProgress=FALSE, quote="", na.strings=c("",NA),
                              select=c("species",
                                       "taxonRank",
                                       "infraspecificEpithet",
@@ -98,8 +99,7 @@ for(src in data_sources) {
                                       "gbifID",
                                       "basisOfRecord",
                                       "institutionCode",
-                                      "establishmentMeans",
-                                      "individualCount"), silent=TRUE)
+                                      "establishmentMeans")), silent=TRUE)
 
          if(!inherits(cwr_gbifDATA,'try-error')){
 
@@ -113,7 +113,7 @@ for(src in data_sources) {
                               countryCode = countrycode::countrycode(countryCode, origin =  'iso2c', destination = 'iso3c', nomatch = NA),
                               establishmentMeans = ifelse(establishmentMeans=="INTRODUCED","Introduced",ifelse(establishmentMeans== "NATIVE", "Native", establishmentMeans)))]
            # create 'fullname', 'is_cultivated_observation', 'individualCount' and 'sourceID' columns
-           cwr_gbifDATA[,`:=`(fullname = ifelse(is.na(infraspecificEpithet), paste(species), paste(species, taxonRank, infraspecificEpithet)),
+           cwr_gbifDATA[, `:=`(fullname = ifelse(is.na(infraspecificEpithet), paste(species), paste(species, taxonRank, infraspecificEpithet)),
                           is_cultivated_observation = "No",
                           individualCount = NA,
                           sourceID = 'CWRGBIF')]
@@ -136,13 +136,41 @@ for(src in data_sources) {
        'spLink' = {
 
          # reading
-         spLinkDATA <- try(data.table::fread(system.file("extdata/Occ_dir/data_sources/SpeciesLink.txt", package='UsefulPlants'),header=TRUE, showProgress=FALSE, na.strings=c("",NA)), silent=TRUE)
+         spLinkDATA <- try(data.table::fread(paste("unzip -p",system.file("extdata/Occ_dir/data_sources/SpeciesLinkData.zip", package='UsefulPlants')),header=TRUE, showProgress=FALSE, encoding = 'UTF-8', na.strings=c("",NA),
+                                             select= c("query",
+                                                       "scientificname",
+                                                       "longitude",
+                                                       "latitude",
+                                                       "country",
+                                                       "coordinateprecision",
+                                                       "yearcollected",
+                                                       "individualcount",
+                                                       "catalognumber",
+                                                       "basisofrecord",
+                                                       "institutioncode"
+                                             )), silent=TRUE)
 
          if(!inherits(spLinkDATA,'try-error')){
           # formatting
-          spLinkDATA <- na.omit(spLinkDATA, cols= c("latitude", "longitude"))
+          # change the column names
+          data.table::setnames(spLinkDATA, c("species", "fullname", "decimalLatitude","decimalLongitude", "countryCode", "coordinateUncertaintyInMeters", "year", "individualCount", "gbifID", "basisOfRecord", "institutionCode"))
 
+          spLinkDATA <- na.omit(spLinkDATA, cols= c("decimalLatitude", "decimalLongitude"))
+          spLinkDATA[ ,`:=`(species = paste0(substr(species,1,1), tolower(substr(species,2,nchar(species)))),
+                           countryCode = ifelse(countryCode=='Brasil','Brazil',countryCode),
+                           basisOfRecord = ifelse(basisOfRecord=="S","SPECIMEN",ifelse(basisOfRecord== "O", "OBSERVATION", basisOfRecord)),
+                           is_cultivated_observation = NA,
+                           establishmentMeans = NA,
+                           sourceID = 'spLink')]
+          spLinkDATA[ ,countryCode:= countrycode::countrycode(countryCode, origin =  'country.name', destination = 'iso3c', nomatch = NA)]
+          # set column order
+          data.table::setcolorder(spLinkDATA, colNames)
+          # set the key to the species column to enable fast binary search
+          data.table::setkey(spLinkDATA, 'species')
           spLink_flag = TRUE
+         }else{
+           cat('\n\n')
+           cat('...<< Unable to read data from spLink database >>...')
          }
 
        },
@@ -150,7 +178,7 @@ for(src in data_sources) {
        'rainbio' = {
 
          # reading
-         rainbioDATA <- try(data.table::fread(system.file("extdata/Occ_dir/data_sources/RAINBIO.csv", package='UsefulPlants'), header=TRUE, showProgress=FALSE, drop=1,
+         rainbioDATA <- try(data.table::fread(paste("unzip -p",system.file("extdata/Occ_dir/data_sources/rainbioyear.zip", package='UsefulPlants')), header=TRUE, showProgress=FALSE,
                                             select=c("tax_sp_level",
                                               "species",
                                               "decimalLatitude",
@@ -191,7 +219,7 @@ for(src in data_sources) {
        'biotime' = {
 
           # reading
-          biotimeDATA  <- try(data.table::fread(system.file("extdata/Occ_dir/data_sources/BioTIMEQuery02_04_2018.csv", package='UsefulPlants'), header=TRUE, showProgress=FALSE,
+          biotimeDATA  <- try(data.table::fread(paste("unzip -p",system.file("extdata/Occ_dir/data_sources/BioTIMEQuery02_04_2018.zip", package='UsefulPlants')), header=TRUE, showProgress=FALSE,
                                                 select=c("GENUS_SPECIES",
                                                          "LATITUDE",
                                                          "LONGITUDE",
@@ -234,7 +262,7 @@ for(src in data_sources) {
 }
 # end of loop
 
-if(!all(c(genesys_flag, spLink_flag, rainbio_flag, biotime_flag))){
+if(!any(c(genesys_flag, spLink_flag, rainbio_flag, biotime_flag, cwr_db_flag))){
   cat('\n\n')
   stop('<< Impossible to read data from databases required >>')
 }
@@ -246,66 +274,93 @@ cat('\n\n')
 #=====================================================================
 cat('> saving data...')
 
-db_dir <- system.file("extdata/Occ_dir/data_formatted", package='UsefulPlants')
+db_dir <- file.path(path.package('UsefulPlants'), "extdata/Occ_dir/data_formatted")
 if(!dir.exists(db_dir))
   dir.create(db_dir, recursive=TRUE)
 
 if(genesys_flag){
   cat('\n')
   cat('==> genesys: ')
-  if(inherits(try(saveRDS(genesysDATA, system.file("extdata/Occ_dir/data_formatted/genesysDATA.rds", package='UsefulPlants')), silent=TRUE),'error')){
+
+  if(file.exists(file.path(db_dir,"genesysDATA.rds")) & !overwrite){
+    genesysDATA0 <- readRDS(file.path(db_dir,"genesysDATA.rds"))
+    genesysDATA <- rbind(genesysDATA0, genesysDATA)
+  }
+
+  if(inherits(try(saveRDS(genesysDATA, file.path(db_dir,"genesysDATA.rds")), silent=TRUE),'try-error')){
+    cat('failed\n')
     warning('Unable to save genesys database')
     genesys_flag = FALSE
   }else
-    cat('done')
+    cat('done\n')
 }
 
 if(cwr_db_flag){
   cat('\n')
   cat('==> cwr: ')
-  if(inherits(try(saveRDS(cwr_gbifDATA, system.file("extdata/Occ_dir/data_formatted/cwr_gbifDATA.rds", package='UsefulPlants')), silent=TRUE),'error')){
+  if(file.exists(file.path(db_dir,"cwr_gbifDATA.rds")) & !overwrite){
+    cwr_gbifDATA0 <- readRDS(file.path(db_dir,"cwr_gbifDATA.rds"))
+    cwr_gbifDATA <- rbind(cwr_gbifDATA0, cwr_gbifDATA)
+  }
+  if(inherits(try(saveRDS(cwr_gbifDATA, file.path(db_dir,"cwr_gbifDATA.rds")), silent=TRUE),'try-error')){
+    cat('failed\n')
     warning('Unable to save cwr database')
     cwr_db_flag = FALSE
   }else
-    cat('done')
+    cat('done\n')
 }
 
 if(spLink_flag){
   cat('\n')
   cat('==> spLink: ')
-  if(inherits(try(saveRDS(spLinkDATA, system.file("extdata/Occ_dir/data_formatted/spLinkDATA.rds", package='UsefulPlants')), silent=TRUE),'error')){
+  if(file.exists(file.path(db_dir,"spLinkDATA.rds")) & !overwrite){
+    spLinkDATA0 <- readRDS(file.path(db_dir,"spLinkDATA.rds"))
+    spLinkDATA <- rbind(spLinkDATA0, spLinkDATA)
+  }
+  if(inherits(try(saveRDS(spLinkDATA, file.path(db_dir,"spLinkDATA.rds")), silent=TRUE),'try-error')){
+    cat('failed\n')
     warning('Unable to save spLink database')
     spLink_flag = FALSE
   }else
-    cat('done')
+    cat('done\n')
 }
 
 if(rainbio_flag){
   cat('\n')
   cat('==> rainbio: ')
-  if(inherits(try(saveRDS(rainbioDATA, system.file("extdata/Occ_dir/data_formatted/rainbioDATA.rds", package='UsefulPlants')), silent=TRUE),'error')){
+  if(file.exists(file.path(db_dir,"rainbioDATA.rds")) & !overwrite){
+    rainbioDATA0 <- readRDS(file.path(db_dir,"rainbioDATA.rds"))
+    rainbioDATA <- rbind(rainbioDATA0, rainbioDATA)
+  }
+  if(inherits(try(saveRDS(rainbioDATA, file.path(db_dir,"rainbioDATA.rds")), silent=TRUE),'error')){
+    cat('failed\n')
     warning('Unable to save rainbio database')
     rainbio_flag = FALSE
   }else
-    cat('done')
+    cat('done\n')
 }
 
 if(biotime_flag){
   cat('\n')
   cat('==> biotime: ')
-  if(inherits(try(saveRDS(biotimeDATA, system.file("extdata/Occ_dir/data_formatted/biotimeDATA.rds", package='UsefulPlants')), silent=TRUE),'error')){
+  if(file.exists(file.path(db_dir,"biotimeDATA.rds")) & !overwrite){
+    biotimeDATA0 <- readRDS(file.path(db_dir,"biotimeDATA.rds"))
+    biotimeDATA <- rbind(biotimeDATA0, biotimeDATA)
+  }
+  if(inherits(try(saveRDS(biotimeDATA, file.path(db_dir,"biotimeDATA.rds")), silent=TRUE),'error')){
+    cat('failed\n')
     warning('Unable to save biotime database')
     biotime_flag = FALSE
   }else
-    cat('done')
+    cat('done\n')
 }
 
-if(!all(c(genesys_flag, spLink_flag, rainbio_flag, biotime_flag, cwr_db_flag))){
+if(!any(c(genesys_flag, spLink_flag, rainbio_flag, biotime_flag, cwr_db_flag))){
   cat('\n\n')
   stop('<< Impossible to save formatted databases >>')
 }
 
-cat('DONE')
+cat('> ...data saved')
 
 cat('\n\n')
 
