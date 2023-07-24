@@ -4,6 +4,9 @@
 # UsefulPlants <img src="man/figures/logo.png" align="right" height="139"/>
 
 <!-- badges: start -->
+
+[![DOI](https://zenodo.org/badge/217888054.svg)](https://zenodo.org/badge/latestdoi/217888054)
+
 <!-- badges: end -->
 
 `UsefulPlants` is an R package primarily developed as supporting
@@ -61,7 +64,7 @@ Biodiversity Patterns*. <https://github.com/IanOndo/rsdm>.
 
 <div id="ref-UsefulPlants" class="csl-entry">
 
-Pironon S., Ondo I., 2023. “The Global Distribution of
+Pironon S., Ondo I. 2023. “The Global Distribution of
 Plants Used by Humans.” Journal Article.
 
 </div>
