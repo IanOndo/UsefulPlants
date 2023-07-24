@@ -1,4 +1,7 @@
 ^UsefulPlants\.Rproj$
 ^\.Rproj\.user$
+<<<<<<< HEAD
 ^data-raw$
 ^LICENSE\.md$
+=======
+>>>>>>> c7b42781b03ff1c34f6e9d13478c8aa452b8c386

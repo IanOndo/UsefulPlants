@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -49,3 +50,6 @@ library(UsefulPlants)
 - Mapping species richness
 
 ## Reference
+=======
+# UsefulPlants
+>>>>>>> c7b42781b03ff1c34f6e9d13478c8aa452b8c386
