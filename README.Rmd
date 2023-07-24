@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: end -->
 
-`UsefulPlants` is an R package primarily developed as supporting software for the results and analyses conducted in the article **"The global distribution of plants used by humans"** [@UsefulPlants]. It relies upon the R package `rsdm` [@rsdm] for building species distribution models (SDMs) of plants used by humans at large scale, thus it helps to streamline global biodiversity analyses, improve code readability and reproducibility.
+`UsefulPlants` is an R package primarily developed as supporting software for the results and analyses conducted in the article **"The global distribution of plants used by humans"** [@UsefulPlants]. It relies upon the R package `rsdm` [@rsdm] for building species distribution models (SDMs) of plants used by humans at large scale, thus it helps to streamline global biodiversity analyses, improve code accessibility and reproducibility.
 
 ## *Installation*
 

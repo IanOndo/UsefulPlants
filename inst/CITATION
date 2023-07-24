@@ -13,8 +13,8 @@ bibentry(
 bibentry(
   bibtype  = "Manual",
   title    = {{UsefulPlants}: Exploring the Global Distributon of People's plant},
-  author   = {Ondo I.},
+  author   = {Ondo Ian},
   year     = {2023},
-  note   = {},
+  note   = {R package version 4.2.1},
   url   = {https://github.com/IanOndo/UsefulPlants}
 )

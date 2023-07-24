@@ -9,10 +9,10 @@
 `UsefulPlants` is an R package primarily developed as supporting
 software for the results and analyses conducted in the article **“The
 global distribution of plants used by humans”** (Pironon S. 2023). It
-relies upon the R package `rsdm` (I. 2023) for building species
+relies upon the R package `rsdm` (Ondo 2023) for building species
 distribution models (SDMs) of plants used by humans at large scale, thus
 it helps to streamline global biodiversity analyses, improve code
-readability and reproducibility.
+accessibility and reproducibility.
 
 ## *Installation*
 
@@ -53,7 +53,7 @@ necessary.
 
 <div id="ref-rsdm" class="csl-entry">
 
-I., Ondo. 2023. *<span class="nocase">rsdm</span>: A r Package for
+Ondo, Ian. 2023. *<span class="nocase">rsdm</span>: A r Package for
 Streamlining Large-Scale Studies of Species Distributions and
 Biodiversity Patterns*. <https://github.com/IanOndo/rsdm>.
 
@@ -61,7 +61,7 @@ Biodiversity Patterns*. <https://github.com/IanOndo/rsdm>.
 
 <div id="ref-UsefulPlants" class="csl-entry">
 
-Pironon S. and Ondo I. 2023. “The Global Distribution of
+Pironon S., Diazgranados M., Ondo I. 2023. “The Global Distribution of
 Plants Used by Humans.” Journal Article.
 
 </div>
