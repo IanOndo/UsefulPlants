@@ -30,11 +30,12 @@ Make sure to have [*R*](https://cloud.r-project.org/ "R") or [*Rstudio*](https:/
 Then, install and load the package:
 
 ``` r
-devtools::install_github("IanOndo/UsefulPlants") # optionally rebuild the vignette by setting , build_opts = c("--no-resave-data", "--no-manual")
+devtools::install_github("IanOndo/UsefulPlants") 
+# optionally rebuild the vignettes by setting , build_opts = c("--no-resave-data", "--no-manual")
 
 library(UsefulPlants)
 ```
-Please follow the vignettes from the package [**rsdm**](https://github.com/IanOndo/rsdm) for *gathering and curating plants occurrence records* and for *modelling species distributions*.  
+Please follow the vignettes from the package [**rsdm**](https://github.com/IanOndo/rsdm) for <u>*gathering and curating plants occurrence records*</u> and for <u>*modelling species distributions*</u>.  
 
 The following vignettes are available, but need to be (re-)built if necessary.
 
