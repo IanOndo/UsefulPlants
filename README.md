@@ -61,7 +61,7 @@ Biodiversity Patterns*. <https://github.com/IanOndo/rsdm>.
 
 <div id="ref-UsefulPlants" class="csl-entry">
 
-Pironon S., Diazgranados M., Ondo I. 2023. “The Global Distribution of
+Pironon S., Ondo I., 2023. “The Global Distribution of
 Plants Used by Humans.” Journal Article.
 
 </div>
