@@ -1,0 +1,20 @@
+bibentry(
+  bibtype  = "Article",
+  title    = {The global distribution of plants used by humans},
+  author   = {Pironon S., Ondo I., Diazgranados M., Allkin R., Baquero A.C., Cámara-Leret R., Canteiro C., Dennehy Z., Govaerts R., Hargreaves S., Hudson A.J., Lemmens R., Milliken W., Nesbitt M., Patmore K., Turner R.M., van Andel T.R., Ulian T., Antonelli A., Willis K.J.},
+  journal  = {},
+  year     = {2023},
+  volume   = {},
+  number   = {},
+  pages    = {},
+  doi      = {}
+)
+
+bibentry(
+  bibtype  = "Manual",
+  title    = {{UsefulPlants}: Exploring the Global Distributon of People's plant},
+  author   = {Ondo I.},
+  year     = {2023},
+  note   = {},
+  url   = {https://github.com/IanOndo/UsefulPlants}
+)

@@ -1,1 +1,0 @@
-This folder contain species occurrence records datasets downloaded from online databases (gbif) in zip file format.

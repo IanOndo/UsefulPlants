@@ -1,0 +1,48 @@
+---
+output: github_document
+bibliography: vignettes/my_bibtex.bib
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "//",
+  fig.path = "man/figures/"
+)
+```
+
+# UsefulPlants <img src="man/figures/logo.png" align="right" height="139"/>
+
+<!-- badges: start -->
+
+
+
+<!-- badges: end -->
+
+`UsefulPlants` is an R package primarily developed as supporting software for the results and analyses conducted in the article **"The global distribution of plants used by humans"** [@UsefulPlants]. It relies upon the R package `rsdm` [@rsdm] for building species distribution models (SDMs) of plants used by humans at large scale, thus it helps to streamline global biodiversity analyses, improve code readability and reproducibility.
+
+## *Installation*
+
+Make sure to have [*R*](https://cloud.r-project.org/ "R") or [*Rstudio*](https://rstudio.com/products/rstudio/download/ "Rstudio") installed on your machine. Some R packages need to be compiled from source, so if you are on Windows, you need to install [*Rtools*](http://cran.r-project.org/bin/windows/Rtools/) too.\\
+
+Then, install and load the package:
+
+``` r
+devtools::install_github("IanOndo/UsefulPlants") # optionally rebuild the vignette by setting , build_opts = c("--no-resave-data", "--no-manual")
+
+library(UsefulPlants)
+```
+Please follow the vignettes from the package [**rsdm**](https://github.com/IanOndo/rsdm) for *gathering and curating plants occurrence records* and for *modelling species distributions*.  
+
+The following vignettes are available, but need to be (re-)built if necessary.
+
+## *Vignettes*
+
+-   Mapping species distribution, richness and endemism
+-   Exploring the latitudinal gradient of utilised plants species richness and endemism
+-   Exploring spatial correlations between utilised plants species richness/endemism and human cultural diversity (incoming soon !)
+
+## References
+
