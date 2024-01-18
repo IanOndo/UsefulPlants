@@ -1,9 +1,9 @@
 bibentry(
   bibtype  = "Article",
-  title    = {The global distribution of plants used by humans},
-  author   = {Pironon S., Ondo I., Diazgranados M., Allkin R., Baquero A.C., Cámara-Leret R., Canteiro C., Dennehy Z., Govaerts R., Hargreaves S., Hudson A.J., Lemmens R., Milliken W., Nesbitt M., Patmore K., Turner R.M., van Andel T.R., Ulian T., Antonelli A., Willis K.J.},
-  journal  = {},
-  year     = {2023},
+  title    = "The global distribution of plants used by humans",
+  author   = as.person("Pironon S. [aut], Ondo I. [aut], Diazgranados M. [aut], Allkin R. [aut], Baquero A.C. [aut], Cámara-Leret R. [aut], Canteiro C. [aut], Dennehy Z. [aut], Govaerts R. [aut], Hargreaves S. [aut], Hudson A.J. [aut], Lemmens R. [aut], Milliken W. [aut], Nesbitt M. [aut], Patmore K. [aut], Turner R.M. [aut], van Andel T.R. [aut], Ulian T. [aut], Antonelli A. [aut], Willis K.J. [aut]"),
+  journal  = "Science -in review-",
+  year     = "2023",
   volume   = {},
   number   = {},
   pages    = {},
@@ -12,9 +12,12 @@ bibentry(
 
 bibentry(
   bibtype  = "Manual",
-  title    = {{UsefulPlants}: Exploring the Global Distributon of People's plant},
-  author   = {Ondo Ian},
-  year     = {2023},
-  note   = {R package version 4.2.1},
-  url   = {https://github.com/IanOndo/UsefulPlants}
+  title    = "UsefulPlants: Exploring the global Distributon of people's plant",
+  author   = person("Ian", "Ondo", email = "i.ondo@kew.org", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-7816-5882")),
+  year     = 2023,
+  version  = "1.0.0",
+  note     = "R package version 4.2.1",
+  url      = "https://github.com/IanOndo/UsefulPlants/",
+  doi      = "10.5281/zenodo.8180353",
+  key      = "UsefulPlants"
 )

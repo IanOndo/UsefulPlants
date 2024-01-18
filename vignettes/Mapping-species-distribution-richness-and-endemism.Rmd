@@ -47,7 +47,7 @@ options(knitr.graphics.error = FALSE)
 **Package notes:**  
 We need to install the following set of R packages to successfully run the codes in this vignette:
 
-- **rsdm** [@rsdm]
+- **UsefulPlants** [@rusefulplants]
 - **terra** [@terra]
 - **ggplot2** [@ggplot2]
 - **ggpubr** [@ggpubr]
@@ -81,7 +81,7 @@ Where, $J_k$ is the number of grid cells species *k* is predicted to occur in.
 
 # Step 1: Obtaining species probability of occurrence data/maps
 If you do not have probability maps of species occurrences yet, please have a look at the vignette [**\textcolor{black}{\underline{Modelling species distribution}}**](`r system.file('vignettes/Modelling-species-distribution.pdf', package='rsdm')`) to obtain such maps using the package **rsdm**.  
-Here, we are going to use the outputs of the modelling of @UsefulPlants, which can be downloaded from its Zenodo repository at [**https://doi.org/10.5281/zenodo.8176318**](https://doi.org/10.5281/zenodo.8176318). Download the dataset, unzip it and save the file `species_proba_per_cell.rds` somewhere on your computer, then load it into R:
+Here, we are going to use the outputs of the modelling of @UsefulPlants, which can be downloaded from its Zenodo repository at [**https://doi.org/10.5281/zenodo.10345634**](https://doi.org/10.5281/zenodo.10345634). Download the dataset, unzip it and save the file `species_proba_per_cell.rds` somewhere on your computer, then load it into R:
 ```{r load-species-distribution-object, echo=TRUE, warning=FALSE, eval=FALSE, include=TRUE, fig.pos="H"}
 
 # load the distribution object (this may take a while, so be patient!)
@@ -105,9 +105,8 @@ We are going to use the list of useful plants and an environmental raster layer 
 
 # select the species you would like to get the distribution for 
 my_species_ID  <- UsefulPlants:::usefulplants |> # list of useful plants 
-  dplyr::mutate(ID=dplyr::row_number()) |> # calculate a row id
-  dplyr::filter(binomial_acc_name=="Acacia cowleana") |>  # select Acacia cowleana
-  dplyr::pull(ID) # extract its row index number
+  dplyr::filter(binomial_acc_name=="Acacia cowleana") |># select Acacia cowleana
+  dplyr::pull(plant_ID) # extract its identifier number
 
 # extract the species probability of occurrence   
 my_species_probas <- species_proba_per_cell[J(my_species_ID)]
@@ -353,8 +352,8 @@ predicted_weighted_endemism <- rast_ref
 raster::values(predicted_weighted_endemism) <- NA 
 
 # fill up raster values with corresponding estimates
-predicted_weighted_endemism[predicted_weighted_endemism[['cell']][valid.cells]] <- 
-  predicted_weighted_endemism[['WE']][valid.cells]
+predicted_weighted_endemism[weighted_endemism[['cell']][valid.cells]] <- 
+  weighted_endemism[['WE']][valid.cells]
 
 ```
 
@@ -363,7 +362,7 @@ predicted_weighted_endemism[predicted_weighted_endemism[['cell']][valid.cells]] 
 m <- raster::rasterToPoints(predicted_weighted_endemism) %>%
   as.data.frame()
 
-weplt <- m2 %>%
+weplt <- m %>%
   ggplot2::ggplot() +
   ggplot2::geom_raster(ggplot2::aes(x=x,y=y,fill=log(WE+1))) +
   ggplot2::theme_classic() +

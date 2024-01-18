@@ -1,7 +1,7 @@
 Package: UsefulPlants
 Title: Exploring the Global Distributon of People's plant
 Version: 1.0.0
-Authors@R: person("Ian", "Ondo", email = "iondo@kew.org", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-7816-5882"))
+Authors@R: person("Ian", "Ondo", email = "i.ondo@kew.org", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-7816-5882"))
 Description: The package UsefulPlants provides a range of tools to explore biogeographic patterns of plants utilised by humans and investigate patterns of biocultural landscapes.
 License: GPL (>= 3)
 Encoding: UTF-8
